@@ -4,6 +4,7 @@ import cors from "cors";
 import {PORT,MONGO_URI} from "./config.js";
 import authRoutes from "./routes/auth.js";
 import LeaveRoutes from "./routes/leaves.js"
+import "dotenv/config";
 
 const app=express();
 

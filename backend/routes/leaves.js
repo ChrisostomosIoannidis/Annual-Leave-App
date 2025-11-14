@@ -1,4 +1,5 @@
-// backend/routes/leaves.js
+import User from "../models/User.js";
+import { sendLeaveRequestEmail } from "../services/email.js";
 import express from "express";
 import LeaveRequest from "../models/LeaveRequest.js";
 import { auth, isAdmin } from "../middleware/auth.js";
@@ -28,6 +29,14 @@ router.post("/", auth, async (req, res) => {
       type,
       reason,
     });
+
+        const user = await User.findById(req.user.id);
+
+    
+    sendLeaveRequestEmail(leave, user).catch((err) =>
+      console.error("Email error:", err.message)
+    ); 
+
     res.status(201).json(leave);
   } catch (err) {
     console.error("POST /leaves error:", err);

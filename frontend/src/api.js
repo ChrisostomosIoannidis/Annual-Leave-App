@@ -12,6 +12,9 @@ export const api = {
   login: (email, password) =>
     axios.post(`${API_URL}/auth/login`, { email, password }),
 
+   register: (name, email, password) =>
+    axios.post(`${API_URL}/auth/register`, { name, email, password }),
+
   getMyLeaves: () =>
     axios.get(`${API_URL}/leaves/mine`, { headers: getAuthHeader() }),
 
