@@ -32,7 +32,7 @@ export default function AdminPanel() {
   };
 
   return (
-    <div style={{ marginTop: 24 }}>
+    <div style={{ marginTop: 24, }}>
       <h2>Admin Panel – All Leave Requests</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {leaves.length === 0 && !error && <p>No leave requests yet.</p>}

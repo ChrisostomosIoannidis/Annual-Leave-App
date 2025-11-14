@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 const API_URL = "http://localhost:5000/api";
@@ -9,12 +8,15 @@ export function getAuthHeader() {
 }
 
 export const api = {
+
   login: (email, password) =>
     axios.post(`${API_URL}/auth/login`, { email, password }),
 
-   register: (name, email, password) =>
+  
+  register: (name, email, password) =>
     axios.post(`${API_URL}/auth/register`, { name, email, password }),
 
+  
   getMyLeaves: () =>
     axios.get(`${API_URL}/leaves/mine`, { headers: getAuthHeader() }),
 
@@ -30,4 +32,22 @@ export const api = {
       { status },
       { headers: getAuthHeader() }
     ),
+
+ 
+  updateLeave: (id, data) =>
+    axios.patch(`${API_URL}/leaves/${id}`, data, {
+      headers: getAuthHeader(),
+    }),
+
+ 
+  deleteLeave: (id) =>
+    axios.delete(`${API_URL}/leaves/${id}`, {
+      headers: getAuthHeader(),
+    }),
+
+  
+  deleteMyLeaves: () =>
+    axios.delete(`${API_URL}/leaves/mine`, {
+      headers: getAuthHeader(),
+    }),
 };

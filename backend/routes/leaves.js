@@ -1,8 +1,9 @@
-import User from "../models/User.js";
-import { sendLeaveRequestEmail } from "../services/email.js";
+
 import express from "express";
 import LeaveRequest from "../models/LeaveRequest.js";
+import User from "../models/User.js";
 import { auth, isAdmin } from "../middleware/auth.js";
+import { sendLeaveRequestEmail } from "../services/email.js";
 
 const router = express.Router();
 
@@ -19,9 +20,11 @@ router.get("/mine", auth, async (req, res) => {
   }
 });
 
+
 router.post("/", auth, async (req, res) => {
   try {
     const { startDate, endDate, type, reason } = req.body;
+
     const leave = await LeaveRequest.create({
       user: req.user.id,
       startDate,
@@ -30,12 +33,13 @@ router.post("/", auth, async (req, res) => {
       reason,
     });
 
-        const user = await User.findById(req.user.id);
-
     
-    sendLeaveRequestEmail(leave, user).catch((err) =>
-      console.error("Email error:", err.message)
-    ); 
+    try {
+      const user = await User.findById(req.user.id);
+      await sendLeaveRequestEmail(leave, user);
+    } catch (emailErr) {
+      console.error("Error sending leave request email:", emailErr.message);
+    }
 
     res.status(201).json(leave);
   } catch (err) {
@@ -82,5 +86,77 @@ router.patch("/:id/status", auth, isAdmin, async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+
+router.patch("/:id", auth, async (req, res) => {
+  try {
+    const leave = await LeaveRequest.findById(req.params.id);
+    if (!leave) {
+      return res.status(404).json({ message: "Leave not found" });
+    }
+
+  
+    if (
+      leave.user.toString() !== req.user.id &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    const { startDate, endDate, type, reason } = req.body;
+
+    if (startDate !== undefined) leave.startDate = startDate;
+    if (endDate !== undefined) leave.endDate = endDate;
+    if (type !== undefined) leave.type = type;
+    if (reason !== undefined) leave.reason = reason;
+
+    const updated = await leave.save();
+    res.json(updated);
+  } catch (err) {
+    console.error("PATCH /leaves/:id error:", err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
+
+
+router.delete("/mine", auth, async (req, res) => {
+  try {
+    console.log("HIT /api/leaves/mine for user", req.user.id);
+    const result = await LeaveRequest.deleteMany({ user: req.user.id });
+    console.log("deleteMany result:", result);
+    res.json({
+      message: `Deleted ${result.deletedCount} leave request(s)`,
+    });
+  } catch (err) {
+    console.error("DELETE /leaves/mine error:", err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    console.log("HIT /api/leaves/:id with", req.params.id);
+    const leave = await LeaveRequest.findById(req.params.id);
+    if (!leave) {
+      return res.status(404).json({ message: "Leave not found" });
+    }
+
+    if (
+      leave.user.toString() !== req.user.id &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({ message: "Not allowed" });
+    }
+
+    await leave.deleteOne();
+    res.json({ message: "Leave deleted" });
+  } catch (err) {
+    console.error("DELETE /leaves/:id error:", err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
 
 export default router;
