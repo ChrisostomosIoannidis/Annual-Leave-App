@@ -128,8 +128,9 @@ export default function Dashboard() {
       <ul style={{ listStyle: "none", padding: 0 }}>
         {leaves.map((l) => (
           <li key={l._id} style={{ marginBottom: "8px" }}>
-            {new Date(l.startDate).toLocaleDateString()} –{" "}
-            {new Date(l.endDate).toLocaleDateString()} ({l.type}){" "}
+     {new Date(l.startDate).toLocaleDateString("en-GB")} {" "}
+{new Date(l.endDate).toLocaleDateString("en-GB")} ({l.type}){" "}
+
             {renderStatusBadge(l.status)}
             {l.reason && <strong> {l.reason}</strong>}
            <button
