@@ -132,18 +132,38 @@ export default function Dashboard() {
             {new Date(l.endDate).toLocaleDateString()} ({l.type}){" "}
             {renderStatusBadge(l.status)}
             {l.reason && <strong> {l.reason}</strong>}
-            <button
-              style={{ marginLeft: "10px" }}
-              onClick={() => handleEdit(l)}
-            >
-              Edit
-            </button>
-            <button
-              style={{ marginLeft: "4px" }}
-              onClick={() => handleDelete(l._id)}
-            >
-              Delete
-            </button>
+           <button
+  onClick={() => handleEdit(l)}
+  style={{
+    backgroundColor: "orange",
+    color: "white",
+    border: "none",
+    padding: "5px 10px",
+    borderRadius: "5px",
+    marginLeft: "10px",
+    cursor: "pointer",
+    fontWeight: "bold"
+  }}
+>
+  Edit
+</button>
+
+<button
+  onClick={() => handleDelete(l._id)}
+  style={{
+    backgroundColor: "dodgerblue",
+    color: "white",
+    border: "none",
+    padding: "5px 10px",
+    borderRadius: "5px",
+    marginLeft: "5px",
+    cursor: "pointer",
+    fontWeight: "bold"
+  }}
+>
+  Delete
+</button>
+
           </li>
         ))}
       </ul>
